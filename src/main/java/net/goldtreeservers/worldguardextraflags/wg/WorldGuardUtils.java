@@ -9,26 +9,22 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class WorldGuardUtils
-{
+public class WorldGuardUtils {
 	public static final String PREVENT_TELEPORT_LOOP_META = "WGEFP: TLP";
 	
 	@SuppressWarnings("unchecked")
-	public static boolean hasNoTeleportLoop(Plugin plugin, Player player, Object location)
-	{
+	public static boolean hasNoTeleportLoop(Plugin plugin, Player player, Object location) {
 		MetadataValue result = player.getMetadata(WorldGuardUtils.PREVENT_TELEPORT_LOOP_META).stream()
 				.filter((p) -> p.getOwningPlugin().equals(plugin))
 				.findFirst()
 				.orElse(null);
 		
-		if (result == null)
-		{
+		if (result == null) {
 			result = new FixedMetadataValue(plugin, new HashSet<>());
 			
 			player.setMetadata(WorldGuardUtils.PREVENT_TELEPORT_LOOP_META, result);
 			
-			new BukkitRunnable()
-			{
+			new BukkitRunnable() {
 				@Override
 				public void run()
 				{
@@ -38,8 +34,8 @@ public class WorldGuardUtils
 		}
 		
 		Set<Object> set = (Set<Object>)result.value();
-		if (set.add(location))
-		{
+		
+		if (set.add(location)) {
 			return true;
 		}
 		

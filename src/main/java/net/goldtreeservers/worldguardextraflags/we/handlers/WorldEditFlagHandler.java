@@ -12,17 +12,15 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.goldtreeservers.worldguardextraflags.flags.Flags;
 
-public class WorldEditFlagHandler extends AbstractDelegateExtent
-{
+public class WorldEditFlagHandler extends AbstractDelegateExtent {
+
 	private final LocalPlayer player;
 
 	private final RegionManager regionManager;
 	
-	public WorldEditFlagHandler(World world, Extent extent, LocalPlayer player, RegionManager regionManager)
-	{
+	public WorldEditFlagHandler(World world, Extent extent, LocalPlayer player, RegionManager regionManager) {
 		super(extent);
 
 		this.player = player;
@@ -31,11 +29,10 @@ public class WorldEditFlagHandler extends AbstractDelegateExtent
 	}
 
 	@Override
-    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException
-    {
+    public boolean setBlock(BlockVector3 location, BlockStateHolder block) throws WorldEditException {
     	ApplicableRegionSet regions = this.regionManager.getApplicableRegions(location);
-    	if (regions.queryState(this.player, Flags.WORLDEDIT) != State.DENY)
-    	{
+    	
+		if (regions.queryState(this.player, Flags.WORLDEDIT) != State.DENY) {
     		return super.setBlock(location, block);
     	}
     	

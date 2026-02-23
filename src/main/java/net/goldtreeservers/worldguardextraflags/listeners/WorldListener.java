@@ -2,7 +2,6 @@ package net.goldtreeservers.worldguardextraflags.listeners;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -17,46 +16,42 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.goldtreeservers.worldguardextraflags.WorldGuardExtraFlagsPlugin;
+import net.goldtreeservers.worldguardextraflags.WGExtraFlags;
 
-@RequiredArgsConstructor
-public class WorldListener implements Listener
-{
-	private final WorldGuardExtraFlagsPlugin plugin;
+public class WorldListener implements Listener {
 
-	private final RegionContainer regionContainer;
+	private final WGExtraFlags plugin;
+	private final RegionContainer container;
+
+	public WorldListener(WGExtraFlags plugin, RegionContainer container) {
+		this.plugin = plugin;
+		this.container = container;
+	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onWorldLoadEvent(WorldLoadEvent event)
-	{
+	public void onWorldLoadEvent(WorldLoadEvent event) {
 		World world = event.getWorld();
 		
-		this.plugin.doUnloadChunkFlagCheck(world);
+		plugin.doUnloadChunkFlagCheck(world);
 	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void onChunkUnloadEvent(ChunkUnloadEvent event)
-	{
+	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
 		World world = event.getWorld();
 		Chunk chunk = event.getChunk();
 
-		this.doUnloadChunkFlagCheck(world, chunk);
+		doUnloadChunkFlagCheck(world, chunk);
 	}
 
-	private void doUnloadChunkFlagCheck(org.bukkit.World world, Chunk chunk)
-	{
-		RegionManager regionManager = this.regionContainer.get(BukkitAdapter.adapt(world));
-		if (regionManager == null)
-		{
+	private void doUnloadChunkFlagCheck(org.bukkit.World world, Chunk chunk) {
+		RegionManager regionManager = container.get(BukkitAdapter.adapt(world));
+
+		if (regionManager == null) {
 			return;
 		}
 
-		for (ProtectedRegion region : regionManager.getApplicableRegions(new ProtectedCuboidRegion("UnloadChunkFlagTester", BlockVector3.at(chunk.getX() * 16, world.getMinHeight(), chunk.getZ() * 16), BlockVector3.at(chunk.getX() * 16 + 15, world.getMaxHeight(), chunk.getZ() * 16 + 15))))
-		{
-			if (region.getFlag(Flags.CHUNK_UNLOAD) == StateFlag.State.DENY)
-			{
+		for (ProtectedRegion region : regionManager.getApplicableRegions(new ProtectedCuboidRegion("UnloadChunkFlagTester", BlockVector3.at(chunk.getX() * 16, world.getMinHeight(), chunk.getZ() * 16), BlockVector3.at(chunk.getX() * 16 + 15, world.getMaxHeight(), chunk.getZ() * 16 + 15)))) {
+			if (region.getFlag(Flags.CHUNK_UNLOAD) == StateFlag.State.DENY) {
 				chunk.addPluginChunkTicket(this.plugin);
 			}
 		}

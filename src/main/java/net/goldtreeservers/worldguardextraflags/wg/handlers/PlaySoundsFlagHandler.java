@@ -22,25 +22,21 @@ import com.sk89q.worldguard.session.Session;
 import net.goldtreeservers.worldguardextraflags.flags.Flags;
 import net.goldtreeservers.worldguardextraflags.flags.data.SoundData;
 
-public class PlaySoundsFlagHandler extends FlagValueChangeHandler<Set<SoundData>>
-{
-	public static final Factory FACTORY(Plugin plugin)
-	{
+public class PlaySoundsFlagHandler extends FlagValueChangeHandler<Set<SoundData>> {
+
+	public static final Factory FACTORY(Plugin plugin) {
 		return new Factory(plugin);
 	}
 	
-    public static class Factory extends Handler.Factory<PlaySoundsFlagHandler>
-    {
+    public static class Factory extends Handler.Factory<PlaySoundsFlagHandler> {
 		private final Plugin plugin;
 
-		public Factory(Plugin plugin)
-		{
+		public Factory(Plugin plugin) {
 			this.plugin = plugin;
 		}
 
 		@Override
-        public PlaySoundsFlagHandler create(Session session)
-        {
+        public PlaySoundsFlagHandler create(Session session) {
             return new PlaySoundsFlagHandler(this.plugin, session);
         }
     }
@@ -48,8 +44,7 @@ public class PlaySoundsFlagHandler extends FlagValueChangeHandler<Set<SoundData>
 	private final Plugin plugin;
     private Map<String, BukkitRunnable> runnables;
 	    
-	protected PlaySoundsFlagHandler(Plugin plugin, Session session)
-	{
+	protected PlaySoundsFlagHandler(Plugin plugin, Session session) {
 		super(session, Flags.PLAY_SOUNDS);
 
 		this.plugin = plugin;
@@ -58,52 +53,41 @@ public class PlaySoundsFlagHandler extends FlagValueChangeHandler<Set<SoundData>
 	}
 
 	@Override
-	protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, Set<SoundData> value)
-	{
+	protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, Set<SoundData> value) {
 		this.handleValue(player, value);
 	}
 
 	@Override
-	protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<SoundData> currentValue, Set<SoundData> lastValue, MoveType moveType)
-	{
+	protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<SoundData> currentValue, Set<SoundData> lastValue, MoveType moveType) {
 		this.handleValue(player, currentValue);
 		return true;
 	}
 
 	@Override
-	protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<SoundData> lastValue, MoveType moveType)
-	{
+	protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<SoundData> lastValue, MoveType moveType) {
 		this.handleValue(player, null);
 		return true;
 	}
 
 	@Override
-	public void tick(LocalPlayer player, ApplicableRegionSet set)
-	{
+	public void tick(LocalPlayer player, ApplicableRegionSet set) {
 		this.handleValue(player, set.queryValue(player, Flags.PLAY_SOUNDS));
     }
 	
-	private void handleValue(LocalPlayer player, Set<SoundData> value)
-	{
+	private void handleValue(LocalPlayer player, Set<SoundData> value) {
 		Player bukkitPlayer = ((BukkitPlayer) player).getPlayer();
 
-		if (value != null && value.size() > 0)
-		{
-			for(SoundData sound : value)
-			{
-				if (!this.runnables.containsKey(sound.sound()))
-				{
-					BukkitRunnable runnable = new BukkitRunnable()
-					{
+		if (value != null && value.size() > 0) {
+			for(SoundData sound : value) {
+				if (!this.runnables.containsKey(sound.sound())) {
+					BukkitRunnable runnable = new BukkitRunnable() {
 						@Override
-						public void run()
-						{
+						public void run() {
 							bukkitPlayer.playSound(bukkitPlayer.getLocation(), sound.sound(), sound.source(), sound.volume(), sound.pitch());
 						}
 						
 						@Override
-						public void cancel()
-						{
+						public void cancel() {
 							super.cancel();
 
 							bukkitPlayer.stopSound(sound.sound(), sound.source());
@@ -118,24 +102,21 @@ public class PlaySoundsFlagHandler extends FlagValueChangeHandler<Set<SoundData>
 		}
 		
 		Iterator<Entry<String, BukkitRunnable>> runnables = this.runnables.entrySet().iterator();
-		while (runnables.hasNext())
-		{
+		
+		while (runnables.hasNext()) {
 			Entry<String, BukkitRunnable> runnable = runnables.next();
 			
-			if (value != null && value.size() > 0)
-			{
+			if (value != null && value.size() > 0) {
 				boolean skip = false;
-				for(SoundData sound : value)
-				{
-					if (sound.sound().equals(runnable.getKey()))
-					{
+				
+				for(SoundData sound : value) {
+					if (sound.sound().equals(runnable.getKey())) {
 						skip = true;
 						break;
 					}
 				}
 				
-				if (skip)
-				{
+				if (skip) {
 					continue;
 				}
 			}

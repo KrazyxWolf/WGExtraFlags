@@ -11,12 +11,11 @@ import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.FlagValueChangeHandler;
 import org.bukkit.entity.Player;
 
-public abstract class AbstractSpeedFlagHandler extends FlagValueChangeHandler<Double>
-{
+public abstract class AbstractSpeedFlagHandler extends FlagValueChangeHandler<Double> {
+	
 	private Float originalSpeed;
 	
-	protected AbstractSpeedFlagHandler(Session session, DoubleFlag flag)
-	{
+	protected AbstractSpeedFlagHandler(Session session, DoubleFlag flag) {
 		super(session, flag);
 	}
 	
@@ -24,54 +23,41 @@ public abstract class AbstractSpeedFlagHandler extends FlagValueChangeHandler<Do
 	protected abstract void setSpeed(Player player, float speed);
 
 	@Override
-	protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, Double value)
-	{
+	protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, Double value) {
 		this.handleValue(player, player.getWorld(), value);
 	}
 
 	@Override
-	protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Double currentValue, Double lastValue, MoveType moveType)
-	{
+	protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Double currentValue, Double lastValue, MoveType moveType) {
 		this.handleValue(player, (World) to.getExtent(), currentValue);
 		return true;
 	}
 
 	@Override
-	protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Double lastValue, MoveType moveType)
-	{
+	protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Double lastValue, MoveType moveType) {
 		this.handleValue(player, (World) to.getExtent(), null);
 		return true;
 	}
 
-	private void handleValue(LocalPlayer player, World world, Double speed)
-	{
+	private void handleValue(LocalPlayer player, World world, Double speed) {
 		Player bukkitPlayer = ((BukkitPlayer) player).getPlayer();
 
-		if (!this.getSession().getManager().hasBypass(player, world) && speed != null)
-		{
-			if (speed > 1.0)
-			{
+		if (!this.getSession().getManager().hasBypass(player, world) && speed != null) {
+			if (speed > 1.0) {
 				speed = 1.0;
-			}
-			else if (speed < -1.0)
-			{
+			} else if (speed < -1.0) {
 				speed = -1.0;
 			}
 			
-			if (this.getSpeed(bukkitPlayer) != speed.floatValue())
-			{
-				if (this.originalSpeed == null)
-				{
+			if (this.getSpeed(bukkitPlayer) != speed.floatValue()) {
+				if (this.originalSpeed == null) {
 					this.originalSpeed = this.getSpeed(bukkitPlayer);
 				}
 				
 				this.setSpeed(bukkitPlayer, speed.floatValue());
 			}
-		}
-		else
-		{
-			if (this.originalSpeed != null)
-			{
+		} else {
+			if (this.originalSpeed != null) {
 				this.setSpeed(bukkitPlayer, this.originalSpeed);
 				
 				this.originalSpeed = null;

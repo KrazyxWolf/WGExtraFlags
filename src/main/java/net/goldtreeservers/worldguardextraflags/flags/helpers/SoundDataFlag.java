@@ -9,43 +9,36 @@ import org.bukkit.SoundCategory;
 
 import java.util.Locale;
 
-public class SoundDataFlag extends Flag<SoundData>
-{
-	public SoundDataFlag(String name)
-	{
+public class SoundDataFlag extends Flag<SoundData> {
+
+	public SoundDataFlag(String name) {
 		super(name);
 	}
 
 	@Override
-	public Object marshal(SoundData o)
-	{
+	public Object marshal(SoundData o) {
 		return o.sound() + " " + o.interval() + " " + o.source() + " " + o.volume() + " " + o.pitch();
 	}
 
 	@Override
-	public SoundData parseInput(FlagContext context) throws InvalidFlagFormat
-	{
+	public SoundData parseInput(FlagContext context) throws InvalidFlagFormat {
 		String[] splitd = context.getUserInput().trim().split(" ");
-		if (splitd.length >= 2 && splitd.length <= 5)
-		{
+		
+		if (splitd.length >= 2 && splitd.length <= 5) {
 			return this.getSoundData(splitd);
-		}
-		else
-		{
+		} else {
 			throw new InvalidFlagFormat("Please use format: <sound name> <interval in ticks> [source] [volume] [pitch]");
 		}
 	}
 
 	@Override
-	public SoundData unmarshal(Object o)
-	{
+	public SoundData unmarshal(Object o) {
 		String[] splitd = o.toString().split(" ");
 
 		return this.getSoundData(splitd);
 	}
 
-	private SoundData getSoundData(String[] splitd)
-	{
+	private SoundData getSoundData(String[] splitd) {
 		return new SoundData(
 				splitd[0],
 				Integer.parseInt(splitd[1]),

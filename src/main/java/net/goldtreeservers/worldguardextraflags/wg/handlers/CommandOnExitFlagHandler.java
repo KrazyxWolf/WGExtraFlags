@@ -17,49 +17,41 @@ import com.sk89q.worldguard.session.Session;
 
 import net.goldtreeservers.worldguardextraflags.flags.Flags;
 
-public class CommandOnExitFlagHandler extends Handler
-{
-	public static final Factory FACTORY()
-	{
+public class CommandOnExitFlagHandler extends Handler {
+
+	public static final Factory FACTORY() {
 		return new Factory();
 	}
 	
-    public static class Factory extends Handler.Factory<CommandOnExitFlagHandler>
-    {
+    public static class Factory extends Handler.Factory<CommandOnExitFlagHandler> {
 		@Override
-        public CommandOnExitFlagHandler create(Session session)
-        {
+        public CommandOnExitFlagHandler create(Session session) {
             return new CommandOnExitFlagHandler(session);
         }
     }
 	
 	private Collection<Set<String>> lastCommands;
 	    
-	protected CommandOnExitFlagHandler(Session session)
-	{
+	protected CommandOnExitFlagHandler(Session session) {
 		super(session);
 		
 		this.lastCommands = new ArrayList<>();
 	}
 	
     @Override
-	public void initialize(LocalPlayer player, Location current, ApplicableRegionSet set)
-    {
+	public void initialize(LocalPlayer player, Location current, ApplicableRegionSet set) {
     	this.lastCommands = set.queryAllValues(player, Flags.COMMAND_ON_EXIT);
     }
     	
 	@Override
-	public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType)
-	{
+	public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
 		Collection<Set<String>> commands = Lists.newArrayList(toSet.queryAllValues(player, Flags.COMMAND_ON_EXIT));
 		
-		if (!commands.isEmpty())
-		{
-			for (ProtectedRegion region : toSet)
-			{
+		if (!commands.isEmpty()) {
+			for (ProtectedRegion region : toSet) {
                 Set<String> commands_ = region.getFlag(Flags.COMMAND_ON_EXIT);
-                if (commands_ != null)
-                {
+                
+				if (commands_ != null) {
                 	commands.add(commands_);
                 }
             }
@@ -69,15 +61,11 @@ public class CommandOnExitFlagHandler extends Handler
 
 		this.lastCommands = commands;
 
-		if (!this.getSession().getManager().hasBypass(player, (World) to.getExtent()))
-		{
-			for (Set<String> commands_ : lastCommands)
-			{
-				if (!commands.contains(commands_) && commands_.size() > 0)
-				{
-					for (String command : commands_)
-					{
-						Bukkit.getServer().dispatchCommand(((BukkitPlayer) player).getPlayer(), command.substring(1).replace("%username%", player.getName())); //TODO: Make this better
+		if (!this.getSession().getManager().hasBypass(player, (World) to.getExtent())) {
+			for (Set<String> commands_ : lastCommands) {
+				if (!commands.contains(commands_) && commands_.size() > 0) {
+					for (String command : commands_) {
+						Bukkit.dispatchCommand(((BukkitPlayer) player).getPlayer(), command.substring(1).replace("%username%", player.getName())); //TODO: Make this better
 					}
 
 					break;

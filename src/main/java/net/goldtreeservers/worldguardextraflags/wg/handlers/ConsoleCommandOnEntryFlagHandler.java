@@ -17,45 +17,36 @@ import com.sk89q.worldguard.session.Session;
 
 import net.goldtreeservers.worldguardextraflags.flags.Flags;
 
-public class ConsoleCommandOnEntryFlagHandler extends Handler
-{
-	public static final Factory FACTORY()
-	{
+public class ConsoleCommandOnEntryFlagHandler extends Handler {
+	
+	public static final Factory FACTORY() {
 		return new Factory();
 	}
 	
-    public static class Factory extends Handler.Factory<ConsoleCommandOnEntryFlagHandler>
-    {
+    public static class Factory extends Handler.Factory<ConsoleCommandOnEntryFlagHandler> {
 		@Override
-        public ConsoleCommandOnEntryFlagHandler create(Session session)
-        {
+        public ConsoleCommandOnEntryFlagHandler create(Session session) {
             return new ConsoleCommandOnEntryFlagHandler(session);
         }
     }
     
 	private Collection<Set<String>> lastCommands;
 	    
-	protected ConsoleCommandOnEntryFlagHandler(Session session)
-	{
+	protected ConsoleCommandOnEntryFlagHandler(Session session) {
 		super(session);
 		
 		this.lastCommands = new ArrayList<>();
 	}
 
 	@Override
-	public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType)
-	{
+	public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
 		Collection<Set<String>> commands = toSet.queryAllValues(player, Flags.CONSOLE_COMMAND_ON_ENTRY);
 
-		if (!this.getSession().getManager().hasBypass(player, (World) to.getExtent()))
-		{
-			for(Set<String> commands_ : commands)
-			{
-				if (!this.lastCommands.contains(commands_))
-				{
-					for(String command : commands_)
-					{
-						Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.substring(1).replace("%username%", player.getName())); //TODO: Make this better
+		if (!this.getSession().getManager().hasBypass(player, (World) to.getExtent())) {
+			for(Set<String> commands_ : commands) {
+				if (!this.lastCommands.contains(commands_)) {
+					for(String command : commands_) {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.substring(1).replace("%username%", player.getName())); //TODO: Make this better
 					}
 
 					break;
@@ -63,15 +54,13 @@ public class ConsoleCommandOnEntryFlagHandler extends Handler
 			}
 		}
 		
-		this.lastCommands = new ArrayList(commands);
+		this.lastCommands = new ArrayList<>(commands);
 		
-		if (!this.lastCommands.isEmpty())
-		{
-			for (ProtectedRegion region : toSet)
-			{
+		if (!this.lastCommands.isEmpty()) {
+			for (ProtectedRegion region : toSet) {
                 Set<String> commands_ = region.getFlag(Flags.CONSOLE_COMMAND_ON_ENTRY);
-                if (commands_ != null)
-                {
+
+                if (commands_ != null) {
                 	this.lastCommands.add(commands_);
                 }
             }

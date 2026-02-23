@@ -7,30 +7,26 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.FlagContext;
 import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 
-public class PotionEffectTypeFlag extends Flag<PotionEffectType>
-{
-	public PotionEffectTypeFlag(String name)
-	{
+public class PotionEffectTypeFlag extends Flag<PotionEffectType> {
+
+	public PotionEffectTypeFlag(String name)  {
 		super(name);
 	}
 
 	@Override
-	public Object marshal(PotionEffectType o)
-	{
+	public Object marshal(PotionEffectType o) {
 		return o.getKey().toString();
 	}
 
 	@Override
-	public PotionEffectType parseInput(FlagContext context) throws InvalidFlagFormat
-	{
+	public PotionEffectType parseInput(FlagContext context) throws InvalidFlagFormat {
 		PotionEffectType potionEffect = Registry.EFFECT.match(context.getUserInput().trim());
-		if (potionEffect == null)
-		{
+		
+		if (potionEffect == null) {
 			potionEffect = PotionEffectType.getByName(context.getUserInput().trim());
 		}
 
-		if (potionEffect != null)
-		{
+		if (potionEffect != null) {
 			return potionEffect;
 		}
 
@@ -38,11 +34,10 @@ public class PotionEffectTypeFlag extends Flag<PotionEffectType>
 	}
 
 	@Override
-	public PotionEffectType unmarshal(Object o)
-	{
+	public PotionEffectType unmarshal(Object o) {
 		PotionEffectType potionEffect = Registry.EFFECT.match(o.toString());
-		if (potionEffect == null)
-		{
+		
+		if (potionEffect == null) {
 			potionEffect = PotionEffectType.getByName(o.toString());
 		}
 

@@ -16,40 +16,40 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 
-import lombok.RequiredArgsConstructor;
 import net.goldtreeservers.worldguardextraflags.flags.Flags;
 
-@RequiredArgsConstructor
-public class BlockListener implements Listener
-{
-	private final WorldGuardPlugin worldGuardPlugin;
-	private final RegionContainer regionContainer;
-	private final SessionManager sessionManager;
+public class BlockListener implements Listener {
+	
+	private final WorldGuardPlugin plugin;
+	private final RegionContainer container;
+	private final SessionManager session;
+
+	public BlockListener(WorldGuardPlugin plugin, RegionContainer container, SessionManager session) {
+		this.plugin = plugin;
+		this.container = container;
+		this.session = session;
+	}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void onEntityBlockFormEvent(EntityBlockFormEvent event)
-	{
+	public void onEntityBlockFormEvent(EntityBlockFormEvent event) {
 		BlockState newState = event.getNewState();
-		if (newState.getType() == Material.FROSTED_ICE)
-		{
+		
+		if (newState.getType() == Material.FROSTED_ICE) {
 			Location location = BukkitAdapter.adapt(newState.getLocation());
 
 			LocalPlayer localPlayer;
-			if (event.getEntity() instanceof Player player)
-			{
-				localPlayer = this.worldGuardPlugin.wrapPlayer(player);
-				if (this.sessionManager.hasBypass(localPlayer, (World) location.getExtent()))
-				{
+			
+			if (event.getEntity() instanceof Player player) {
+				localPlayer = plugin.wrapPlayer(player);
+				
+				if (session.hasBypass(localPlayer, (World) location.getExtent())) {
 					return;
 				}
-			}
-			else
-			{
+			} else {
 				localPlayer = null;
 			}
 
-			if (this.regionContainer.createQuery().queryValue(location, localPlayer, Flags.FROSTWALKER) == State.DENY)
-			{
+			if (container.createQuery().queryValue(location, localPlayer, Flags.FROSTWALKER) == State.DENY) {
 				event.setCancelled(true);
 			}
 		}

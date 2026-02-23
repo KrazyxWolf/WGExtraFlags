@@ -5,14 +5,14 @@ import org.bukkit.plugin.Plugin;
 import com.comphenix.protocol.ProtocolLibrary;
 
 import lombok.Getter;
-import net.goldtreeservers.worldguardextraflags.WorldGuardExtraFlagsPlugin;
+import net.goldtreeservers.worldguardextraflags.WGExtraFlags;
 
 public class ProtocolLibHelper
 {
-	@Getter private final WorldGuardExtraFlagsPlugin plugin;
+	@Getter private final WGExtraFlags plugin;
 	@Getter private final Plugin protocolLibPlugin;
 	
-	public ProtocolLibHelper(WorldGuardExtraFlagsPlugin plugin, Plugin protocolLibPlugin)
+	public ProtocolLibHelper(WGExtraFlags plugin, Plugin protocolLibPlugin)
 	{
 		this.plugin = plugin;
 		this.protocolLibPlugin = protocolLibPlugin;
