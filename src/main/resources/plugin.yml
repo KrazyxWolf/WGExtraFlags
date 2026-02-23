@@ -1,13 +1,12 @@
-name: WorldGuardExtraFlags
+name: WGExtraFlags
 description: Adds more flags to WorldGuard to help manage your server easily!
-
-version: 4.2.5-SNAPSHOT
-api-version: 1.13
+version: ${project.version}
+api-version: 1.21
 
 author: isokissa3
 website: https://joniaromaa.fi
 
 depend: [ WorldGuard ]
-softdepend: [ ProtocolLib ]
+softdepend: [ packetevents ]
 
-main: net.goldtreeservers.worldguardextraflags.WorldGuardExtraFlagsPlugin
+main: net.goldtreeservers.worldguardextraflags.WGExtraFlags
