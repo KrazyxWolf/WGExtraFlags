@@ -1,8 +1,5 @@
 package net.goldtreeservers.worldguardextraflags;
 
-import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
@@ -13,21 +10,16 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.session.SessionManager;
 import net.goldtreeservers.worldguardextraflags.listeners.*;
+import net.goldtreeservers.worldguardextraflags.packet.PacketEventsHelper;
 import net.goldtreeservers.worldguardextraflags.wg.handlers.*;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
-
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flag;
-
 import net.goldtreeservers.worldguardextraflags.flags.Flags;
-import net.goldtreeservers.worldguardextraflags.protocollib.ProtocolLibHelper;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WGExtraFlags extends JavaPlugin {
-
-	private static final Set<Flag<?>> FLAGS = WGExtraFlags.getPluginFlags();
 	
 	private WorldEditPlugin worldEditPlugin;
 
@@ -37,7 +29,7 @@ public class WGExtraFlags extends JavaPlugin {
 	private RegionContainer regionContainer;
 	private SessionManager sessionManager;
 
-	private ProtocolLibHelper protocolLibHelper;
+	private PacketEventsHelper packetEventsHelper;
 	
 	@Override
 	public void onLoad() {
@@ -82,10 +74,8 @@ public class WGExtraFlags extends JavaPlugin {
 		}
 		
 		try {
-			Plugin protocolLibPlugin = this.getServer().getPluginManager().getPlugin("ProtocolLib");
-			if (protocolLibPlugin != null)
-			{
-				this.protocolLibHelper = new ProtocolLibHelper(this, protocolLibPlugin);
+			if (getServer().getPluginManager().getPlugin("packetevents") != null) {
+				this.packetEventsHelper = new PacketEventsHelper();
 			}
 		} catch(Exception ignore) {}
 	}
@@ -119,29 +109,25 @@ public class WGExtraFlags extends JavaPlugin {
 
 		this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(this.worldGuardPlugin, this.regionContainer, this.sessionManager));
 		
-		if (this.protocolLibHelper != null) {
-			try
-			{
-				this.protocolLibHelper.onEnable();
-			}
-			catch (Exception ignore) {
+		if (this.packetEventsHelper != null) {
+			try {
+				this.packetEventsHelper.onEnable();
+			} catch (Exception ignore) {
 				getServer().getPluginManager().registerEvents(new EntityPotionEffectEventListener(this.worldGuardPlugin, this.sessionManager), this);
 			}
 		} else {
 			getServer().getPluginManager().registerEvents(new EntityPotionEffectEventListener(this.worldGuardPlugin, this.sessionManager), this);
 		}
 		
-		for(World world : this.getServer().getWorlds())
-		{
+		for(World world : this.getServer().getWorlds()) {
 			this.doUnloadChunkFlagCheck(world);
 		}
-		
 	}
 
 	public void doUnloadChunkFlagCheck(org.bukkit.World world) {
 		RegionManager regionManager = this.regionContainer.get(BukkitAdapter.adapt(world));
 		
-		if (regionManager == null){
+		if (regionManager == null) {
 			return;
 		}
 
@@ -159,18 +145,6 @@ public class WGExtraFlags extends JavaPlugin {
 				}
 			}
 		}
-	}
-	
-	private static Set<Flag<?>> getPluginFlags() {
-		Set<Flag<?>> flags = new HashSet<>();
-		
-		for (Field field : Flags.class.getFields()) {
-			try {
-				flags.add((Flag<?>)field.get(null));
-			} catch (IllegalArgumentException | IllegalAccessException e) {}
-		}
-		
-		return flags;
 	}
 
 	public static WGExtraFlags getPlugin() {
