@@ -24,6 +24,7 @@ public class WGExtraFlags extends JavaPlugin {
 	private WorldEditPlugin worldEditPlugin;
 
 	private WorldGuardPlugin worldGuardPlugin;
+
 	private WorldGuard worldGuard;
 
 	private RegionContainer regionContainer;
@@ -51,6 +52,7 @@ public class WGExtraFlags extends JavaPlugin {
 			flagRegistry.register(Flags.KEEP_EXP);
 			flagRegistry.register(Flags.CHAT_PREFIX);
 			flagRegistry.register(Flags.CHAT_SUFFIX);
+			flagRegistry.register(Flags.BLOCKED_SKILLS);
 			flagRegistry.register(Flags.BLOCKED_EFFECTS);
 			flagRegistry.register(Flags.GODMODE);
 			flagRegistry.register(Flags.RESPAWN_LOCATION);
@@ -66,7 +68,7 @@ public class WGExtraFlags extends JavaPlugin {
 			flagRegistry.register(Flags.ITEM_DURABILITY);
 			flagRegistry.register(Flags.JOIN_LOCATION);
 		} catch (Exception e) {
-			this.getServer().getPluginManager().disablePlugin(this);
+			getServer().getPluginManager().disablePlugin(this);
 
 			throw new RuntimeException(e instanceof IllegalStateException ?
 					"WorldGuard prevented flag registration. Did you reload the plugin? This is not supported!" :
@@ -107,6 +109,10 @@ public class WGExtraFlags extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new WorldListener(this, this.regionContainer), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(this.worldGuardPlugin, this.regionContainer, this.sessionManager), this);
 
+		if(getServer().getPluginManager().isPluginEnabled("MythicLib")) {
+			getServer().getPluginManager().registerEvents(new PlayerSkillListener(this.regionContainer), this);
+		}
+
 		this.worldEditPlugin.getWorldEdit().getEventBus().register(new WorldEditListener(this.worldGuardPlugin, this.regionContainer, this.sessionManager));
 		
 		if (this.packetEventsHelper != null) {
@@ -145,6 +151,14 @@ public class WGExtraFlags extends JavaPlugin {
 				}
 			}
 		}
+	}
+
+	public WorldGuardPlugin getWorldGuardPlugin() {
+		return worldGuardPlugin;
+	}
+
+	public WorldGuard getWorldGuard() {
+		return worldGuard;
 	}
 
 	public static WGExtraFlags getPlugin() {

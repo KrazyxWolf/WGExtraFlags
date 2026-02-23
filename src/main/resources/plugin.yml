@@ -7,6 +7,6 @@ author: isokissa3
 website: https://joniaromaa.fi
 
 depend: [ WorldGuard ]
-softdepend: [ packetevents ]
+softdepend: ['packetevents', 'MythicLib']
 
 main: net.goldtreeservers.worldguardextraflags.WGExtraFlags

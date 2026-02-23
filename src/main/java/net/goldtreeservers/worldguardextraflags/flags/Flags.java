@@ -32,6 +32,8 @@ public final class Flags {
 	
 	public final static StringFlag CHAT_PREFIX = new StringFlag("chat-prefix");
 	public final static StringFlag CHAT_SUFFIX = new StringFlag("chat-suffix");
+
+	public static final SetFlag<String> BLOCKED_SKILLS = new SetFlag<>("blocked-skills", new UppercasedStringFlag(null));
 	
 	public final static SetFlag<PotionEffectType> BLOCKED_EFFECTS = new SetFlag<>("blocked-effects", new PotionEffectTypeFlag(null));
 	
