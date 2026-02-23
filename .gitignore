@@ -1,0 +1,22 @@
+# Other IDE files
+*.classpath
+*.project
+*.settings/
+.idea/*
+*.iml
+*.tmp
+git/
+.DS_Store
+scripts/
+
+# Checkstyle-IDEA config
+!.idea/checkstyle-idea.xml
+
+# Build files
+.vscode/
+target/
+/bin/
+*.class
+
+# Run directory
+/run/
